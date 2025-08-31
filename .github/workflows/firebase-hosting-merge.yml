@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20' # Or your project's node version
+          node-version: '20'
           cache: 'npm'
 
       - run: npm ci
@@ -34,11 +34,11 @@ jobs:
           VITE_APP_ID: ${{ secrets.VITE_APP_ID }}
           VITE_MEASUREMENT_ID: ${{ secrets.VITE_MEASUREMENT_ID }}
 
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
+      - id: auth
+        uses: google-github-actions/auth@v2
         with:
-          token_format: 'access_token' # ✅ Fix added
-          workload_identity_provider: 'projects/850618567800/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          token_format: access_token
+          workload_identity_provider: 'projects/850618567800/locations/global/workloadIdentityPools/github-pool/providers/github'
           service_account: 'github-actions-deployer@scribble-hub-45904.iam.gserviceaccount.com'
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
