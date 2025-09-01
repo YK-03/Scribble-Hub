@@ -1,0 +1,42 @@
+name: Firebase Deploy
+
+on:
+  push:
+    branches:
+      - main  # deploy when changes are pushed to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout the repo
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Authenticate to Google Cloud using Workload Identity Federation
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: projects/850618567800/locations/global/workloadIdentityPools/github-pool/providers/github
+          service_account: github-actions-deployer@scribble-hub-45904.iam.gserviceaccount.com
+          create_credentials_file: true
+          export_environment_variables: true
+
+      # 3️⃣ Setup Node.js (for Vite build)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # 4️⃣ Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # 5️⃣ Build the project
+      - name: Build Project
+        run: npm run build
+
+      # 6️⃣ Deploy to Firebase Hosting + Realtime Database rules
+      - name: Deploy to Firebase
+        run: firebase deploy --only hosting,database
