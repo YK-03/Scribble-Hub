@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "firebase deploy": "scribble-hub-45904",
+    "default": "scribble-hub-45904"
+  },
+  "targets": {},
+  "etags": {}
+}
