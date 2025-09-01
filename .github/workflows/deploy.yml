@@ -1,42 +1,39 @@
-name: Firebase Deploy
+name: Deploy to Firebase Hosting
 
+# Trigger on pushes to main or on pull requests
 on:
   push:
     branches:
-      - main  # deploy when changes are pushed to main
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read            # Required to access the repo
+  id-token: write           # Required for Workload Identity Federation
+  pull-requests: write      # Optional, if you want PR status updates
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
+      # 1️⃣ Checkout your code
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Authenticate to Google Cloud using Workload Identity Federation
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
+      # 2️⃣ Authenticate to Google Cloud
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: projects/850618567800/locations/global/workloadIdentityPools/github-pool/providers/github
-          service_account: github-actions-deployer@scribble-hub-45904.iam.gserviceaccount.com
-          create_credentials_file: true
-          export_environment_variables: true
+          workload_identity_provider: "projects/850618567800/locations/global/workloadIdentityPools/github-pool/providers/github"
+          service_account: "github-actions-deployer@scribble-hub-45904.iam.gserviceaccount.com"
 
-      # 3️⃣ Setup Node.js (for Vite build)
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
+      # 3️⃣ Install Firebase CLI
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
 
-      # 4️⃣ Install dependencies
-      - name: Install Dependencies
-        run: npm install
-
-      # 5️⃣ Build the project
-      - name: Build Project
-        run: npm run build
-
-      # 6️⃣ Deploy to Firebase Hosting + Realtime Database rules
-      - name: Deploy to Firebase
-        run: firebase deploy --only hosting,database
+      # 4️⃣ Deploy to Firebase Hosting
+      - name: Deploy to Firebase Hosting
+        run: firebase deploy --only hosting
