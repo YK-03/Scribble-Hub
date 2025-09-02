@@ -1,37 +1,18 @@
-import React from "react";
-import { useTheme } from "./ThemeProvider";
+import { Heart } from "lucide-react";
 
 const Footer = () => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   return (
-    <footer
-      className={
-        `w-full border-t px-4 py-5 flex items-center justify-center bg-transparent ` +
-        (isDark
-          ? "border-[#232b3e] bg-[#181c2a] text-[#b0b0b0]"
-          : "border-[#e5e7eb] bg-[#f8fafc] text-[#444]")
-      }
-      style={{
-        minHeight: 56,
-        fontFamily: "Inter, Segoe UI, Arial, sans-serif",
-        fontWeight: 500,
-        fontSize: 16,
-        letterSpacing: 0.2,
-      }}
-    >
-      <span className="flex items-center gap-2 text-center select-none">
-        Developed
-        by
-        <span
-          style={{
-            fontWeight: 600,
-            color: isDark ? "#a78bfa" : "#7c3aed",
-            
-          }}
-        >Yash Kaushik
-        </span>
-      </span>
+    <footer className="py-6 border-t border-border">
+      <div className="container mx-auto px-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} Scribble Hub. All rights reserved.
+          </p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            Made with <Heart className="w-4 h-4 text-red-500 fill-current" /> by Yash Kaushik
+          </div>
+        </div>
+      </div>
     </footer>
   );
 };

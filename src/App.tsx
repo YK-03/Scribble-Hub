@@ -19,6 +19,8 @@ import NotFound from "@/pages/NotFound";
 import Signup from "@/components/Signup";
 import Homepage from "./HomePage"
 import ArchivePage from "./pages/ArchivePage";
+import InboxPage from "../InboxPage";
+import GenericNotePage from "../GenericNotePage";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +64,8 @@ const App = () => (
             {/* Note-taking Routes (pointing to Dashboard as placeholders) */}
             <Route path="/homepage" element={<Homepage />} />
             <Route path="/archive" element={<ArchivePage />} />
+            <Route path="/inbox" element={<InboxPage />} />
+            <Route path="/note/:id" element={<GenericNotePage />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:searchterm" element={<Projects />} />
             <Route path="/meeting" element={<Meeting />} />

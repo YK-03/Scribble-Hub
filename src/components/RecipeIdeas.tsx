@@ -159,7 +159,7 @@ export default function App() {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/homepage')}
               className="font-bold text-2xl text-purple-600 bg-transparent"
               aria-label="Go to homepage"
             >

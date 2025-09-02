@@ -153,7 +153,7 @@ export default function App() {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => window.location.href = '/homepage'}
               className="font-bold text-2xl text-purple-600 focus:outline-none"
               aria-label="Go to homepage"
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}

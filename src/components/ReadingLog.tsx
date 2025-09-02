@@ -159,7 +159,7 @@ export default function App() {
       <header className={`shadow-sm p-4 sticky top-0 z-10 ${isDarkMode ? 'bg-neutral-800' : 'bg-white'}`}>
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <button onClick={() => navigate('/')} className="font-bold text-2xl text-purple-600 bg-transparent" aria-label="Go to homepage">
+            <button onClick={() => navigate('/homepage')} className="font-bold text-2xl text-purple-600 bg-transparent" aria-label="Go to homepage">
               Scribble Hub
             </button>
           </div>

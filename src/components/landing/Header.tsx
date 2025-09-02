@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { PenTool, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -24,7 +24,7 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-              <PenTool className="w-6 h-6 text-white" />
+              <img src="/pen-tool.png" alt="Scribble Hub Logo" className="w-6 h-6" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-[#de6dc8] to-[#a855f7] bg-clip-text text-transparent ">
               Scribble Hub

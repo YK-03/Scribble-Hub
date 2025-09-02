@@ -1,14 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Search, User, Ghost } from "lucide-react";
+import { PlusCircle, Search, Ghost, Save, Inbox } from "lucide-react";
 import { Sun, MoonStar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "./ThemeProvider";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const darkMode = theme === "dark";
   const handleThemeToggle = () => setTheme(darkMode ? "light" : "dark");
+  const [quickNoteTitle, setQuickNoteTitle] = useState("");
+  const [quickNote, setQuickNote] = useState("");
+  const [isQuickCaptureOpen, setIsQuickCaptureOpen] = useState(false);
+
+  const handleSaveQuickNote = () => {
+    if (!quickNote.trim() && !quickNoteTitle.trim()) return;
+
+    const newNote = {
+      id: `quick-note-${Date.now()}`,
+      title: quickNoteTitle.trim() || "Untitled Note",
+      content: quickNote.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    const quickNotes = JSON.parse(localStorage.getItem("quickNotes") || "[]");
+    localStorage.setItem("quickNotes", JSON.stringify([newNote, ...quickNotes]));
+    window.dispatchEvent(new Event('quickNotesChanged'));
+    toast.success("Note captured to your inbox!");
+    setQuickNoteTitle("");
+    setQuickNote("");
+    setIsQuickCaptureOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-sidebar backdrop-blur supports-[backdrop-filter]:bg-sidebar/95">
       <div className="container flex h-16 items-center justify-between px-6">
@@ -33,12 +67,47 @@ const Header = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <Button variant="secondary" size="sm" className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground border-0">
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Note
-          </Button>
+          <Dialog open={isQuickCaptureOpen} onOpenChange={setIsQuickCaptureOpen}>
+            <DialogTrigger asChild>
+              <Button variant="secondary" size="sm" className="bg-sidebar-primary hover:bg-sidebar-primary/90 text-sidebar-primary-foreground border-0">
+                <PlusCircle className="h-4 w-4 mr-2" />
+                New Note
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[480px]">
+              <DialogHeader>
+                <DialogTitle>Quick Capture</DialogTitle>
+                <DialogDescription>
+                  Jot down a fleeting thought. It will be saved to your inbox.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <Input
+                  id="title"
+                  placeholder="Title (optional)"
+                  value={quickNoteTitle}
+                  onChange={(e) => setQuickNoteTitle(e.target.value)}
+                  className="focus-visible:ring-primary"
+                />
+                <Textarea
+                  placeholder="What's on your mind?"
+                  className="min-h-[120px] focus-visible:ring-primary"
+                  value={quickNote}
+                  onChange={(e) => setQuickNote(e.target.value)}
+                />
+              </div>
+              <DialogFooter>
+                <Button type="submit" onClick={handleSaveQuickNote}><Save className="mr-2 h-4 w-4" /> Save Note</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           <div className="flex items-center gap-1">
+            <Button asChild variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-primary" title="View Inbox">
+              <Link to="/inbox" aria-label="View Inbox">
+                <Inbox className="h-5 w-5" />
+              </Link>
+            </Button>
             <Button asChild variant="ghost" size="icon" className="text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-primary" title="View Archived Notes">
               <Link to="/archive" aria-label="View Archived Notes">
                 <Ghost className="h-5 w-5" />
