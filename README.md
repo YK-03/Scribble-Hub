@@ -1,69 +1,68 @@
-# Scribble Hub
+## 🚀 Features
 
-## Project info
+### 🧠 Structured Workspace
+- Centralized dashboard with categorized note sections  
+- Pre-defined categories like:
+  - Project Ideas  
+  - Meeting Notes  
+  - Learning Goals  
+  - Reading List  
+  - Recipe Ideas  
+  - Art Playground  
+- Designed for clarity, focus, and quick access  
 
-**URL**: https://scribble-hub-45904.web.app/
+---
 
-## How can I edit this code?
+### 📝 Note Management
+- Create notes instantly using **“New Note”**  
+- Each note includes:
+  - Title  
+  - Description preview  
+  - Timestamp  
+- Organized storage for easy retrieval and tracking  
 
-There are several ways of editing your application.
+---
 
-**Use your preferred IDE**
+### 🔍 Smart Search
+- Global search bar to quickly find notes  
+- Fast filtering across all categories  
+- Eliminates the need to manually browse through notes  
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🧩 Multi-Domain Productivity
+- Supports different use-cases in one platform:
+  - 📌 Idea tracking  
+  - 📊 Meeting documentation  
+  - 🎯 Goal setting  
+  - 📚 Knowledge management  
+  - 🍳 Creative/AI-assisted workflows  
+  - 🎨 Freeform creative space  
+- Goes beyond a simple notes app → acts as a productivity hub  
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 🎨 Clean & Minimal UI
+- Card-based layout for better visualization  
+- Distraction-free interface  
+- Smooth typography and spacing for readability  
+- Inspired by modern productivity tools  
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+### ⏱️ Activity Tracking
+- Timestamped notes (e.g., “1 day ago”)  
+- Helps users track recency and updates  
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+### 🔐 Personalized Experience
+- User-specific workspace  
+- Persistent notes across sessions  
+- Welcome-based interface for better engagement  
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🖼️ Preview
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with the following technologies:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## Environment Variables
-
-To run this project locally, you'll need to create a `.env` file in the root of the project and add the necessary Firebase configuration variables. You can get these from your Firebase project settings.
-
-A `.env.example` file is provided in the repository. You can copy it to `.env` and fill in the values:
-`cp .env.example .env`
-
-## How can I deploy this project?
-
-This project is configured for continuous deployment to Firebase Hosting using GitHub Actions.
-
-- **Preview Deployments**: When a pull request is opened, a preview version of the site is automatically deployed.
-- **Production Deployment**: When a pull request is merged into the `main` branch, the site is automatically deployed to the live channel on Firebase Hosting.
+![ScribbleHub Workspace](./public/assets/workspace.jpg)
