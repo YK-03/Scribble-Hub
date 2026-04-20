@@ -1,98 +1,188 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import {
-  User,
-  LogOut,
-  Sun,
-  Moon,
-  Folder,
-  BookOpen,
-  CookingPot,
-  PenTool,
-} from 'lucide-react';
-import { useTheme } from './ThemeProvider';
+import { useMemo } from "react";
+import { signOut } from "firebase/auth";
+import { CalendarDays, FolderKanban, Inbox, LogOut, StickyNote } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-// A placeholder for a User Info component or a simple mock
-const UserInfo = ({ userName, onLogout }) => (
-    <div className="flex items-center space-x-4 mb-8">
-        <div className="flex-shrink-0 w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-3xl font-bold">{userName[0]}</span>
+import useAuth from "@/hooks/useAuth";
+import { auth } from "@/lib/firebase";
+
+import AppShell, { NOTE_CATEGORIES, getNotesMeta } from "./AppShell";
+
+const getInitials = (name?: string | null) => {
+  if (!name?.trim()) {
+    return "?";
+  }
+
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("")
+    .slice(0, 2);
+
+  return initials || "?";
+};
+
+const formatDate = (value?: string | null) => {
+  if (!value) {
+    return "Unknown";
+  }
+
+  const parsed = Date.parse(value);
+
+  if (Number.isNaN(parsed)) {
+    return "Unknown";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
+};
+
+const Profile = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const categoryBreakdown = useMemo(() => {
+    return NOTE_CATEGORIES.map((category) => ({
+      ...category,
+      ...getNotesMeta(category.storageKey),
+    }));
+  }, []);
+
+  const inboxCount = useMemo(() => {
+    try {
+      const quickNotes = JSON.parse(localStorage.getItem("quickNotes") || "[]");
+      return Array.isArray(quickNotes) ? quickNotes.length : 0;
+    } catch {
+      return 0;
+    }
+  }, []);
+
+  const totalNotes = categoryBreakdown.reduce((sum, category) => sum + category.count, 0);
+
+  const handleLogout = async () => {
+    try {
+      sessionStorage.clear();
+      await signOut(auth);
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    }
+  };
+
+  return (
+    <AppShell>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="border-b border-border bg-background/95 px-8 py-6 backdrop-blur">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Your account details and a quick view of everything stored in your workspace.
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-destructive px-4 text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90"
+            >
+              <LogOut size={18} />
+              Logout
+            </button>
+          </div>
         </div>
-        <div>
-            <h2 className="text-3xl font-bold text-white">Welcome, {userName}!</h2>
-            <p className="text-sm text-gray-400">Your creative hub awaits.</p>
+
+        <div className="flex-1 overflow-y-auto px-8 py-8">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+            <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                {user?.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName || user.email || "Profile"}
+                    className="h-24 w-24 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary text-3xl font-semibold text-primary-foreground">
+                    {getInitials(user?.displayName)}
+                  </div>
+                )}
+
+                <div className="min-w-0">
+                  <h2 className="truncate text-2xl font-semibold text-card-foreground">
+                    {user?.displayName || "Unnamed user"}
+                  </h2>
+                  <p className="mt-2 truncate text-sm text-muted-foreground">
+                    {user?.email || "No email available"}
+                  </p>
+                  <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
+                    <CalendarDays className="h-4 w-4" />
+                    Joined {formatDate(user?.metadata.creationTime)}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-1">
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <StickyNote className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">Total notes</span>
+                </div>
+                <p className="mt-4 text-3xl font-semibold text-card-foreground">{totalNotes}</p>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <Inbox className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">Inbox count</span>
+                </div>
+                <p className="mt-4 text-3xl font-semibold text-card-foreground">{inboxCount}</p>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <FolderKanban className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-muted-foreground">Categories</span>
+                </div>
+                <p className="mt-4 text-3xl font-semibold text-card-foreground">{NOTE_CATEGORIES.length}</p>
+              </div>
+            </section>
+          </div>
+
+          <section className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-sm">
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold text-card-foreground">Notes by category</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Current note totals based on the existing local storage keys in your workspace.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {categoryBreakdown.map((category) => (
+                <div
+                  key={category.id}
+                  className="flex items-center justify-between gap-4 rounded-xl border border-border bg-background px-4 py-3"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${category.color}`} />
+                    <span className="truncate text-sm font-medium text-foreground">
+                      {category.name}
+                    </span>
+                  </div>
+                  <span className="shrink-0 text-sm text-muted-foreground">
+                    {category.count} {category.count === 1 ? "note" : "notes"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
-    </div>
-);
+      </div>
+    </AppShell>
+  );
+};
 
-// Dashboard main component
-export default function ProfileDashboard() {
-    const navigate = useNavigate();
-    const { theme, setTheme } = useTheme();
-    const isDarkMode = theme === 'dark';
-    const toggleDarkMode = () => setTheme(isDarkMode ? 'light' : 'dark');
-
-    // Mock user data and categories
-    const userName = 'John Doe';
-    const categories = [
-        { name: 'Projects', icon: <Folder size={40} />, description: 'Capture and manage ideas for your projects.', route: '/projects' },
-        { name: 'Reading Log', icon: <BookOpen size={40} />, description: 'Track your reading journey and log summaries.', route: '/reading-log' },
-        { name: 'Recipe Ideas', icon: <CookingPot size={40} />, description: 'Generate and save your culinary creations.', route: '/recipe-ideas' },
-        { name: 'Art Playground', icon: <PenTool size={40} />, description: 'Unleash your creativity on a digital canvas.', route: '/art-playground' },
-    ];
-
-    const handleLogout = () => {
-        // In a real application, you would handle Firebase signOut here.
-        console.log('User logged out.');
-        navigate('/signup');
-    };
-
-    return (
-        <div className={`min-h-screen font-sans p-8 ${isDarkMode ? 'dark bg-neutral-900 text-neutral-100' : 'bg-neutral-50 text-neutral-900'}`}>
-            <header className="sticky top-0 z-10 p-4 mb-8 flex justify-between items-center bg-transparent">
-                <div className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">
-                    Scribble Hub
-                </div>
-                <div className="flex space-x-2">
-                    <button
-                        onClick={toggleDarkMode}
-                        className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'}`}
-                        aria-label="Toggle dark mode"
-                    >
-                        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                    </button>
-                    <button
-                        onClick={handleLogout}
-                        className="px-4 py-2 bg-red-600 text-white rounded-full font-semibold shadow-lg hover:bg-red-700 transition-colors flex items-center space-x-2"
-                    >
-                        <LogOut size={20} />
-                        <span>Logout</span>
-                    </button>
-                </div>
-            </header>
-
-            <main className="container mx-auto">
-                <UserInfo userName={userName} onLogout={handleLogout} />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {categories.map((category) => (
-                        <Link
-                            key={category.name}
-                            to={category.route}
-                            className={`block p-6 rounded-xl shadow-lg border border-transparent transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl 
-                                ${isDarkMode ? 'bg-neutral-800 hover:border-purple-600' : 'bg-white hover:border-purple-600'}`}
-                        >
-                            <div className="flex items-center space-x-4 mb-4">
-                                <div className={`p-3 rounded-full ${isDarkMode ? 'bg-purple-900 text-purple-300' : 'bg-purple-100 text-purple-600'}`}>
-                                    {category.icon}
-                                </div>
-                                <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-neutral-100' : 'text-neutral-900'}`}>{category.name}</h3>
-                            </div>
-                            <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-neutral-600'}`}>{category.description}</p>
-                        </Link>
-                    ))}
-                </div>
-            </main>
-        </div>
-    );
-}
+export default Profile;

@@ -1,17 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'; // Import required icons
 import GoogleLogo from '@/assets/google.png'; // Import Google logo image
 import { signInWithPopup } from "firebase/auth";
+import { useAuth } from "@/hooks/useAuth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { motion } from "framer-motion";
 
 // Signup Page Component
 export default function Signup(): JSX.Element {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/homepage", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   // Handle Google Sign-in
   const handleGoogleSignIn = async (): Promise<void> => {

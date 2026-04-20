@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeProvider';
 import {
   SquarePen,
   Trash2,
@@ -8,15 +7,13 @@ import {
   Search,
   Sparkles,
   Loader2,
-  Moon,
-  Sun,
   ClipboardList,
   Circle,
   CircleDot,
   CheckCircle,
   Book,
-  Link,
 } from 'lucide-react';
+import AppShell from '@/components/AppShell';
 
 // Main App component for Learning Goals
 export default function App() {
@@ -58,10 +55,8 @@ export default function App() {
   const [goalIdToDelete, setGoalIdToDelete] = useState(null);
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const { theme, setTheme } = useTheme();
-  const isDarkMode = theme === 'dark';
-  const toggleDarkMode = () => setTheme(isDarkMode ? 'light' : 'dark');
-
+  const handleSearchChange = (e) => setSearchQuery(e.target.value);
+  const handleAdd = () => handleAddGoal();
   const toggleSubtask = (goalId, subtaskName) => {
     setGoals(goals.map(goal => {
       if (goal.id === goalId) {
@@ -148,72 +143,62 @@ export default function App() {
   );
 
   return (
-    <div className={`min-h-screen font-sans ${isDarkMode ? 'dark bg-neutral-900 text-neutral-100' : 'bg-neutral-50 text-neutral-900'}`}>
-      <header className={`shadow-sm p-4 sticky top-0 z-10 ${isDarkMode ? 'bg-neutral-800' : 'bg-white'}`}>
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => window.location.href = '/homepage'}
-              className="font-bold text-2xl text-purple-600 focus:outline-none"
-              aria-label="Go to homepage"
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-            >
-              Scribble Hub
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'}`}
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            <div className="relative">
+    <AppShell>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex items-center justify-between px-8 h-14 border-b border-border shrink-0">
+          <h1 className="text-xl font-medium tracking-tight">Learning Goals</h1>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 h-8 border border-border rounded-md bg-muted w-52">
+              <Search size={13} className="text-muted-foreground shrink-0" />
               <input
                 type="text"
-                placeholder="Search notes..."
+                placeholder="Search…"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`pl-10 pr-4 py-2 rounded-full ${isDarkMode ? 'bg-neutral-700 text-neutral-300' : 'bg-neutral-100 text-neutral-700'} focus:outline-none focus:ring-2 focus:ring-purple-300 transition-colors`}
+                onChange={handleSearchChange}
+                className="border-none bg-transparent h-full p-0 text-sm outline-none w-full text-foreground placeholder:text-muted-foreground"
               />
-              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-neutral-400' : 'text-neutral-400'}`} size={18} />
             </div>
+
             <button
-              onClick={handleAddGoal}
-              className="px-4 py-2 bg-purple-600 text-white rounded-full font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+              onClick={handleAdd}
+              className="flex items-center gap-2 px-4 py-1.5 bg-[#7F77DD] text-white text-sm font-medium rounded-md hover:bg-[#6e66cc] transition-colors"
             >
-              <Plus size={20} />
-              <span>New Goal</span>
+              <Plus size={14} />
+              New goal
             </button>
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto p-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-neutral-800 dark:text-neutral-200">Your Learning Goals</h1>
-          <p className="text-lg text-neutral-500 mt-2 dark:text-neutral-400">Set, track, and accomplish your learning objectives.</p>
+        <div className="flex-1 overflow-y-auto px-8 py-8">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+            {filteredGoals.length > 0 ? (
+              filteredGoals.map(goal => (
+                <GoalCard
+                  key={goal.id}
+                  goal={goal}
+                  onEdit={handleEditGoal}
+                  onDelete={handleDeleteClick}
+                  toggleSubtask={toggleSubtask}
+                  onStatusChange={handleStatusChange}
+                />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
+                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4" />
+                <h2 className="text-base font-medium text-foreground mb-1">
+                  Nothing here yet
+                </h2>
+                <p className="text-sm text-muted-foreground max-w-xs">
+                  {searchQuery
+                    ? `No results for "${searchQuery}"`
+                    : "Add your first entry to get started."}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-          {filteredGoals.length > 0 ? (
-            filteredGoals.map(goal => (
-              <GoalCard
-                key={goal.id}
-                goal={goal}
-                onEdit={handleEditGoal}
-                onDelete={handleDeleteClick}
-                toggleSubtask={toggleSubtask}
-                onStatusChange={handleStatusChange}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-neutral-500 p-8 dark:text-neutral-400">
-              <p>No learning goals found. Try adding a new one!</p>
-            </div>
-          )}
-        </div>
-      </main>
+      </div>
 
       {isModalOpen && (
         <GoalForm
@@ -238,7 +223,7 @@ export default function App() {
           onClose={() => setIsMessageModalOpen(false)}
         />
       )}
-    </div>
+    </AppShell>
   );
 }
 
@@ -258,21 +243,20 @@ const GoalCard = ({ goal, onEdit, onDelete, toggleSubtask, onStatusChange }) => 
   };
 
   const getProgressColor = (progress) => {
-    if (progress === 100) return 'bg-green-500';
-    if (progress > 0) return 'bg-blue-500';
-    return 'bg-neutral-300 dark:bg-neutral-600';
+    if (progress > 0) return 'bg-[#7F77DD]';
+    return 'bg-muted';
   };
 
   return (
-    <div className="group bg-white rounded-lg shadow-md p-6 border border-neutral-200 hover:shadow-lg transition-shadow duration-300 dark:bg-neutral-800 dark:border-neutral-700">
+    <div className="bg-card rounded-xl border border-border p-5 hover:bg-accent/30 hover:border-border/80 transition-all duration-150 group">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center space-x-2">
           {getStatusIcon(goal.status)}
-          <h3 className="font-bold text-lg text-neutral-800 break-words dark:text-neutral-200">{goal.title}</h3>
+          <h3 className="break-words text-lg font-bold text-foreground">{goal.title}</h3>
           <select
             value={goal.status}
             onChange={e => onStatusChange(goal.id, e.target.value)}
-            className="ml-2 px-3 py-2 rounded bg-neutral-100 dark:bg-neutral-700 text-xs border border-neutral-300 dark:border-neutral-600 focus:outline-none"
+            className="ml-2 rounded border border-border bg-muted px-3 py-2 text-xs text-foreground focus:outline-none"
             style={{ minWidth: 130 }}
             aria-label="Set status"
           >
@@ -284,26 +268,26 @@ const GoalCard = ({ goal, onEdit, onDelete, toggleSubtask, onStatusChange }) => 
         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(goal)}
-            className="p-1 text-neutral-500 hover:text-purple-600 transition-colors rounded-full"
+            className="rounded-full p-1 text-muted-foreground transition-colors hover:text-purple-600"
             aria-label="Edit goal"
           >
             <SquarePen size={18} />
           </button>
           <button
             onClick={() => onDelete(goal.id)}
-            className="p-1 text-neutral-500 hover:text-red-500 transition-colors rounded-full"
+            className="rounded-full p-1 text-muted-foreground transition-colors hover:text-red-500"
             aria-label="Delete goal"
           >
             <Trash2 size={18} />
           </button>
         </div>
       </div>
-      <p className="text-sm text-neutral-600 line-clamp-3 mb-4 dark:text-neutral-400">{goal.description}</p>
+      <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">{goal.description}</p>
       <div className="mb-4">
         <div className="flex justify-between items-center text-sm font-semibold mb-2">
           <span>Progress: {goal.progress}%</span>
         </div>
-        <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden dark:bg-neutral-700">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
             className={`h-full ${getProgressColor(goal.progress)} transition-all duration-500`}
             style={{ width: `${goal.progress}%` }}
@@ -312,7 +296,7 @@ const GoalCard = ({ goal, onEdit, onDelete, toggleSubtask, onStatusChange }) => 
       </div>
 
       <div className="text-sm">
-        <div className="flex items-center space-x-1 mb-2 font-semibold text-neutral-700 dark:text-neutral-300">
+        <div className="mb-2 flex items-center space-x-1 font-semibold text-foreground">
           <ClipboardList size={16} />
           <span>Sub-tasks</span>
         </div>
@@ -323,16 +307,16 @@ const GoalCard = ({ goal, onEdit, onDelete, toggleSubtask, onStatusChange }) => 
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => toggleSubtask(goal.id, task.name)}
-                className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 dark:bg-neutral-700 dark:border-neutral-600"
+                className="w-4 h-4 rounded accent-[#7F77DD]"
               />
-              <span className={`text-neutral-600 dark:text-neutral-400 ${task.completed ? 'line-through text-neutral-400 dark:text-neutral-500' : ''}`}>{task.name}</span>
+              <span className={`text-muted-foreground ${task.completed ? 'line-through opacity-70' : ''}`}>{task.name}</span>
             </li>
           ))}
         </ul>
       </div>
 
       <div className="text-sm mt-4">
-        <div className="flex items-center space-x-1 mb-2 font-semibold text-neutral-700 dark:text-neutral-300">
+        <div className="mb-2 flex items-center space-x-1 font-semibold text-foreground">
           <Book size={16} />
           <span>Resources</span>
         </div>
@@ -347,7 +331,7 @@ const GoalCard = ({ goal, onEdit, onDelete, toggleSubtask, onStatusChange }) => 
         </ul>
       </div>
 
-      <div className="flex justify-between items-center text-xs text-neutral-400 mt-4 dark:text-neutral-500">
+      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
         <span>{goal.timestamp}</span>
       </div>
     </div>

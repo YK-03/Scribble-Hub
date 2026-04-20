@@ -1,103 +1,81 @@
 import { Card } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { 
-  Lightbulb, 
-  Users, 
-  GraduationCap, 
-  BookOpen, 
-  ChefHat, 
+import {
+  BookOpen,
+  ChefHat,
+  GraduationCap,
+  Lightbulb,
   Palette,
-  ArrowRight,
-  Sparkles
+  Users,
 } from "lucide-react";
 
 const features = [
   {
     icon: Lightbulb,
     title: "Project Ideas",
-    description: "Capture and develop your next big ideas.",
-    gradient: "from-yellow-400 to-orange-500",
-    delay: "0s"
+    description: "Capture concepts, sketch plans, and shape the work before it starts.",
   },
   {
     icon: Users,
     title: "Meeting Notes",
-    description: "Stay organized with smart meeting notes and action items.",
-    gradient: "from-blue-400 to-cyan-500",
-    delay: "0.1s"
+    description: "Keep summaries, attendees, and action items in a format you can actually reuse.",
   },
   {
     icon: GraduationCap,
     title: "Learning Goals",
-    description: "Track your learning journey with personalized goal setting and progress monitoring.",
-    gradient: "from-green-400 to-emerald-500",
-    delay: "0.2s"
+    description: "Track skills, progress, and the milestones that matter to your growth.",
   },
   {
     icon: BookOpen,
     title: "Reading List",
-    description: "Your personal archive of knowledge. Track, summarize, and reflect on your reading journey.",
-    gradient: "from-purple-400 to-pink-500",
-    delay: "0.3s"
+    description: "Store highlights, links, and reflections from everything you read.",
   },
   {
     icon: ChefHat,
     title: "Recipe Ideas",
-    description: "AI-powered culinary creative space. Turn any prompt into delicious, step-by-step recipes.",
-    gradient: "from-red-400 to-rose-500",
-    delay: "0.4s"
+    description: "Save experiments, inspirations, and generated recipes in one calm space.",
   },
   {
     icon: Palette,
     title: "Art Playground",
-    description: "Digital space for you to scribble, sketch, and doodle with a variety of colors and brush sizes.",
-    gradient: "from-indigo-400 to-purple-500",
-    delay: "0.5s"
-  }
+    description: "Switch from structured notes to freeform thinking whenever you need it.",
+  },
 ];
 
 const FeatureGrid = () => {
   return (
-    <section id="features" className="py-24 bg-background scroll-mt-16">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16 animate-fade-in">
-          <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Everything you need to
-            <br />
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Unlock Your Mind
-            </span>
+    <section id="features" className="scroll-mt-20 px-6 py-20 lg:px-8 lg:py-24">
+      <div className="mx-auto max-w-7xl">
+        <div className="max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+            Features
+          </p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground dark:text-gray-200 sm:text-4xl">
+            One focused workspace for every kind of note.
           </h2>
-          
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Whether you're brainstorming creatively or learning systematically, our intelligent features
-            provide the perfect canvas for every thought, project, and idea.
+          <p className="mt-4 text-lg leading-8 text-muted-foreground dark:text-gray-400">
+            Each space is tailored for a different kind of thinking, but the experience stays
+            consistent, calm, and easy to navigate.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => {
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {features.map((feature) => {
             const Icon = feature.icon;
+
             return (
               <Card
                 key={feature.title}
-                className="group flex flex-col p-8 bg-card/50 backdrop-blur-lg border border-border/20 rounded-2xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1.5 animate-slide-up"
-                style={{ animationDelay: feature.delay }}
+                className="group rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-xl hover:shadow-black/5 dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_14px_38px_rgba(0,0,0,0.28)] dark:hover:border-gray-600 dark:hover:bg-gray-700 dark:hover:shadow-[0_20px_48px_rgba(0,0,0,0.38)]"
               >
-                <div className="flex-grow">
-                  <div className="relative inline-block mb-6">
-                    <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="w-8 h-8 text-white" />
-                    </div>
-                    <div className={`absolute -inset-2.5 bg-gradient-to-br ${feature.gradient} rounded-2xl blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-300`} />
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3">
-                    {feature.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {feature.description}
-                  </p>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-muted transition-colors duration-300 group-hover:border-primary/30 group-hover:bg-primary/10 dark:border-gray-700 dark:bg-gray-700 dark:group-hover:border-primary/40 dark:group-hover:bg-primary/15">
+                  <Icon className="h-5 w-5 text-foreground dark:text-gray-200" />
                 </div>
+                <h3 className="mt-6 text-xl font-semibold text-foreground dark:text-gray-200">
+                  {feature.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-muted-foreground dark:text-gray-400">
+                  {feature.description}
+                </p>
               </Card>
             );
           })}

@@ -1,62 +1,73 @@
 import { Button } from "@/components/ui/button";
+import { ArrowRight, CheckCircle2, Laptop2, MoonStar } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CheckCircle, WifiOff, Smartphone } from "lucide-react";
 
 const CTASection = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 hero-gradient" />
-      
-      {/* Floating Elements */}
-      <div className="absolute top-10 left-1/4 w-24 h-24 bg-white/10 rounded-full blur-xl animate-float" />
-      <div className="absolute bottom-10 right-1/4 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-float" style={{ animationDelay: '3s' }} />
+    <section className="px-6 py-20 lg:px-8 lg:py-24">
+      <div className="mx-auto max-w-7xl">
+        <div className="overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_20px_60px_hsl(var(--foreground)/0.06)] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_22px_64px_rgba(0,0,0,0.36)]">
+          <div className="grid gap-10 px-6 py-10 sm:px-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-14 lg:py-14">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+                Get Started
+              </p>
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground dark:text-gray-200 sm:text-4xl">
+                Bring structure to ideas without losing your momentum.
+              </h2>
+              <p className="mt-4 text-base leading-8 text-muted-foreground dark:text-gray-400 sm:text-lg">
+                Start with a simple workspace that feels polished on day one and stays useful as
+                your notes, plans, and projects grow.
+              </p>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          {/* Badge */}
-          
-          {/* Heading */}
-          <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            Ready to transform
-            <br />
-            <span className="bg-gradient-to-r from-accent to-white bg-clip-text text-transparent">
-              your note-taking?
-            </span>
-          </h2>
-
-          {/* Description */}
-          <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Start organizing your thoughts beautifully today. No credit card required, 
-            cancel anytime. Your creativity deserves the best tools.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
-            <Link to="/signup">
-              <Button 
-                size="lg" 
-                className="bg-white text-primary hover:bg-white/90 shadow-xl shadow-primary/25 px-8 py-4 text-lg font-semibold"
-              >
-                <ArrowRight className="w-5 h-5 mr-3" />
-                Start Writing Now
-              </Button>
-            </Link>
-          </div>
-
-          {/* Trust Indicators */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 text-white/60">
-            <div className="flex items-center gap-2.5">
-              <CheckCircle className="w-4 h-4 text-green-400" />
-              <span className="text-sm">Free forever plan</span>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  asChild
+                  size="lg"
+                  className="h-12 rounded-xl bg-foreground px-6 text-base font-medium text-background transition-all duration-200 hover:scale-[1.02] hover:bg-foreground/90 dark:bg-gray-200 dark:text-gray-900 dark:hover:bg-gray-100 dark:hover:shadow-[0_14px_36px_rgba(0,0,0,0.35)]"
+                >
+                  <Link to="/signup">
+                    Create your workspace
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                </div>
             </div>
-            <div className="flex items-center gap-2.5">
-              <WifiOff className="w-4 h-4 text-blue-400" />
-              <span className="text-sm">Works offline</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <Smartphone className="w-4 h-4 text-indigo-400" />
-              <span className="text-sm">Sync across devices</span>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="rounded-2xl border border-border bg-background p-5 dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Laptop2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground dark:text-gray-200">Designed for focus</p>
+                    <p className="text-sm text-muted-foreground dark:text-gray-400">Minimal interface, less friction.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-background p-5 dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <MoonStar className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground dark:text-gray-200">Balanced themes</p>
+                    <p className="text-sm text-muted-foreground dark:text-gray-400">Clear in light mode, rich in dark mode.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-background p-5 sm:col-span-2 lg:col-span-1 dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  <p className="text-sm leading-7 text-muted-foreground dark:text-gray-400">
+                    Built for personal systems, meeting notes, reading logs, learning goals, and
+                    everything in between.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

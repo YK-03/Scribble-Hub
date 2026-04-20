@@ -1,26 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Sun, Moon, SquarePen, Trash2, Plus, X, Search, Mic, Calendar, Users, ListTodo 
-} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from './ThemeProvider';
+import { 
+  SquarePen, Trash2, Plus, X, Search, Mic, Calendar, Users, ListTodo 
+} from 'lucide-react';
+import AppShell from '@/components/AppShell';
+
+type SpeechRecognitionResultEvent = {
+  results: ArrayLike<ArrayLike<{ transcript: string }>>;
+};
+
+type SpeechRecognitionErrorEvent = {
+  error: string;
+};
+
+type SpeechRecognitionInstance = {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: SpeechRecognitionResultEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+};
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 
 // TypeScript declarations for SpeechRecognition
 declare global {
   interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
   }
 }
 
 
 // Main App component for Meeting Notes
 export default function App() {
-  const { theme, setTheme } = useTheme();
-  const isDarkMode = theme === 'dark';
-  const toggleDarkMode = () => setTheme(isDarkMode ? 'light' : 'dark');
-  const navigate = useNavigate();
-
   // Load notes from localStorage or use dummy notes if none exist
   const dummyNotes = [
     {
@@ -80,6 +95,8 @@ export default function App() {
   const [noteIdToDelete, setNoteIdToDelete] = useState(null);
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const handleSearchChange = (e) => setSearchQuery(e.target.value);
+  const handleAdd = () => handleAddNote();
 
   // Function to open the modal for a new note
   const handleAddNote = () => {
@@ -141,59 +158,59 @@ export default function App() {
   );
 
   return (
-    <div className={`min-h-screen font-sans ${isDarkMode ? 'dark bg-card text-[#E0E0E0]' : 'bg-neutral-50 text-neutral-900'}`}>
-      <header className={`shadow-sm p-4 sticky top-0 z-10 ${isDarkMode ? 'bg-card' : 'bg-white'}`}>
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => navigate("/homepage")}
-              className="font-bold text-2xl text-purple-600 bg-transparent"
-              aria-label="Go to homepage"
-            >
-              Scribble Hub
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'}`}
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            <button
-              onClick={handleAddNote}
-              className="px-4 py-2 bg-purple-600 text-white rounded-full font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
-            >
-              <Plus size={20} />
-              <span>New Note</span>
-            </button>
-          </div>
-        </div>
-      </header>
-      <main className="container mx-auto p-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-neutral-800 dark:text-card-foreground dark:drop-shadow-lg">Your Meeting Notes</h1>
-          <p className="text-lg text-neutral-500 mt-2 dark:text-muted-foreground">Capture and organize your thoughts from meetings.</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredNotes.length > 0 ? (
-            filteredNotes.map(note => (
-              <NoteCard
-                key={note.id}
-                note={note}
-                onEdit={handleEditNote}
-                onDelete={handleDeleteClick}
+    <AppShell>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex items-center justify-between px-8 h-14 border-b border-border shrink-0">
+          <h1 className="text-xl font-medium tracking-tight">Meeting Notes</h1>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 h-8 border border-border rounded-md bg-muted w-52">
+              <Search size={13} className="text-muted-foreground shrink-0" />
+              <input
+                type="text"
+                placeholder="Search…"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="border-none bg-transparent h-full p-0 text-sm outline-none w-full text-foreground placeholder:text-muted-foreground"
               />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-neutral-500 p-8 dark:text-muted-foreground">
-              <h2 className="text-2xl font-semibold mb-2">No meeting notes found</h2>
-              <p className="text-lg">Start by adding a new note to capture your meeting thoughts!</p>
             </div>
-          )}
+
+            <button
+              onClick={handleAdd}
+              className="flex items-center gap-2 px-4 py-1.5 bg-[#7F77DD] text-white text-sm font-medium rounded-md hover:bg-[#6e66cc] transition-colors"
+            >
+              <Plus size={14} />
+              New meeting
+            </button>
+          </div>
         </div>
-      </main>
+        <div className="flex-1 overflow-y-auto px-8 py-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredNotes.length > 0 ? (
+              filteredNotes.map(note => (
+                <NoteCard
+                  key={note.id}
+                  note={note}
+                  onEdit={handleEditNote}
+                  onDelete={handleDeleteClick}
+                />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
+                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4" />
+                <h2 className="text-base font-medium text-foreground mb-1">
+                  Nothing here yet
+                </h2>
+                <p className="text-sm text-muted-foreground max-w-xs">
+                  {searchQuery
+                    ? `No results for "${searchQuery}"`
+                    : "Add your first entry to get started."}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
       {isModalOpen && (
         <NoteForm
           onSave={handleSaveNote}
@@ -215,7 +232,7 @@ export default function App() {
           onClose={() => setIsMessageModalOpen(false)}
         />
       )}
-    </div>
+    </AppShell>
   );
 }
 
@@ -223,40 +240,40 @@ export default function App() {
 const NoteCard = ({ note, onEdit, onDelete }) => {
   const navigate = useNavigate();
   return (
-    <div className="group bg-white rounded-lg shadow-md p-6 border border-neutral-200 hover:shadow-lg transition-shadow duration-300 dark:bg-card dark:border-border cursor-pointer" onClick={() => navigate(`/meeting/${note.id}`)}>
+    <div className="bg-card rounded-xl border border-border p-5 hover:bg-accent/30 hover:border-border/80 transition-all duration-150 cursor-pointer group" onClick={() => navigate(`/meeting/${note.id}`)}>
       <div className="flex justify-between items-start mb-4">
-        <h3 className="font-bold text-lg text-neutral-800 break-words dark:text-card-foreground">{note.title}</h3>
+        <h3 className="break-words text-lg font-bold text-foreground">{note.title}</h3>
         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(note)}
-            className="p-1 text-neutral-500 hover:text-purple-600 transition-colors rounded-full"
+            className="rounded-full p-1 text-muted-foreground transition-colors hover:text-purple-600"
             aria-label="Edit note"
           >
             <SquarePen size={18} />
           </button>
           <button
             onClick={() => onDelete(note.id)}
-            className="p-1 text-neutral-500 hover:text-red-500 transition-colors rounded-full"
+            className="rounded-full p-1 text-muted-foreground transition-colors hover:text-red-500"
             aria-label="Delete note"
           >
             <Trash2 size={18} />
           </button>
         </div>
       </div>
-    <p className="text-sm text-neutral-600 line-clamp-3 mb-2 dark:text-muted-foreground">{note.description}</p>
-    <div className="text-xs text-neutral-500 flex items-center space-x-1 mb-1 dark:text-muted-foreground">
+      <p className="mb-2 line-clamp-3 text-sm text-muted-foreground">{note.description}</p>
+      <div className="mb-1 flex items-center space-x-1 text-xs text-muted-foreground">
         <Calendar size={12} />
         <span>{note.date}</span>
       </div>
-    <div className="text-xs text-neutral-500 flex items-center space-x-1 mb-1 dark:text-muted-foreground">
+      <div className="mb-1 flex items-center space-x-1 text-xs text-muted-foreground">
         <Users size={12} />
         <span>{note.attendees}</span>
       </div>
-    <div className="text-xs text-neutral-500 flex items-center space-x-1 mb-4 dark:text-muted-foreground">
+      <div className="mb-4 flex items-center space-x-1 text-xs text-muted-foreground">
         <ListTodo size={12} />
         <span>{note.actionItems.length} action items</span>
       </div>
-      <div className="flex justify-between items-center text-xs text-neutral-400 dark:text-muted-foreground">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>{note.timestamp}</span>
       </div>
     </div>

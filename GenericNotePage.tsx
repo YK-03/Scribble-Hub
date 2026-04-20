@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from './src/components/Header';
-import { Textarea } from '../src/components/ui/textarea';
-import { Input } from '../src/components/ui/input';
+import { Textarea } from './src/components/ui/textarea';
+import { Input } from './src/components/ui/input';
 
 interface Note {
     id: string;

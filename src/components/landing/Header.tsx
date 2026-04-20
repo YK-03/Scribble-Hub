@@ -8,83 +8,72 @@ const Header = () => {
 
   const navLinks = [
     { href: "#features", label: "Features" },
-    { href: "#contact", label: "Contact" }
+    { href: "#contact", label: "Contact" },
   ];
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
-    if (isMenuOpen) setIsMenuOpen(false);
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
   };
 
   return (
-    <header className="fixed top-0 w-full z-50 border-b border-border/20 bg-background/80 backdrop-blur-lg">
-      <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-              <img src="/pen-tool.png" alt="Scribble Hub Logo" className="w-6 h-6" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-[#de6dc8] to-[#a855f7] bg-clip-text text-transparent ">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900/80">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
+        <Link to="/" className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-card shadow-sm dark:border-gray-700 dark:bg-gray-800">
+            <img src="/pen-tool.png" alt="Scribble Hub Logo" className="h-5 w-5" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-base font-semibold tracking-tight text-foreground dark:text-gray-200">
               Scribble Hub
             </span>
-          </Link>
+          </div>
+        </Link>
 
-          {/* Desktop CTA */}
-          <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden items-center gap-8 md:flex">
+          {navLinks.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={(e) => handleScroll(e, link.href)}
+              className="text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground dark:text-gray-400 dark:hover:text-gray-200"
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={() => setIsMenuOpen((value) => !value)}
+          aria-label="Toggle menu"
+        >
+          {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      {isMenuOpen ? (
+        <div className="border-t border-border/70 bg-background/95 px-6 py-4 md:hidden dark:border-gray-800 dark:bg-gray-900/95">
+          <nav className="flex flex-col gap-3">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
+                className="rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                 onClick={(e) => handleScroll(e, link.href)}
-                className="cursor-pointer text-foreground/80 hover:text-primary transition-colors font-medium"
               >
                 {link.label}
               </a>
             ))}
-          </nav>
-
-          <div className="hidden md:flex items-center gap-4">
-            <Button asChild>
-               <Link to="/signup">Sign In</Link>
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </Button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden animate-fade-in border-t border-border/20 bg-background/95 py-4">
-            <nav className="flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="cursor-pointer text-foreground/80 hover:text-primary transition-colors font-medium py-2 text-center"
-                  onClick={(e) => handleScroll(e, link.href)}
-                >
-                  {link.label}
-                </a>
-              ))}
-              <div className="flex flex-col gap-2 border-t border-border/20 pt-4">
-                <Button asChild variant="outline" className="w-full justify-center">
-                  <Link to="/signup" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
-                </Button>
-              </div>
             </nav>
-          </div>
-        )}
-      </div>
+        </div>
+      ) : null}
     </header>
   );
 };

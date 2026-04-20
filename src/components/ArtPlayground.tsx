@@ -1,10 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Download, Paintbrush, Search, Trash2 } from 'lucide-react';
+
+import AppShell from './AppShell';
 
 const ArtPlayground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentColor, setCurrentColor] = useState('#000000');
   const [brushSize, setBrushSize] = useState(5);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -13,13 +17,12 @@ const ArtPlayground: React.FC = () => {
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    // Set initial canvas properties
     context.lineCap = 'round';
     context.lineJoin = 'round';
     context.lineWidth = brushSize;
     context.strokeStyle = currentColor;
-    context.fillStyle = '#ffffff'; // Set canvas background to white
-    context.fillRect(0, 0, canvas.width, canvas.height); // Fill the canvas with white
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
   }, [brushSize, currentColor]);
 
   const startDrawing = ({ nativeEvent }: React.MouseEvent) => {
@@ -59,7 +62,7 @@ const ArtPlayground: React.FC = () => {
 
     const context = canvas.getContext('2d');
     if (!context) return;
-    context.fillStyle = '#ffffff'; // Fill with white
+    context.fillStyle = '#ffffff';
     context.fillRect(0, 0, canvas.width, canvas.height);
   };
 
@@ -75,57 +78,88 @@ const ArtPlayground: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 bg-[#1e1e1e] min-h-screen">
-      <div className="bg-[#282828] p-6 rounded-xl shadow-2xl">
-        <h2 className="text-center text-3xl font-bold text-white mb-6">Art Playground</h2>
-        
-        {/* Controls */}
-        <div className="flex items-center space-x-4 mb-4">
-          <label htmlFor="color-picker" className="text-gray-300">Color:</label>
-          <input
-            id="color-picker"
-            type="color"
-            value={currentColor}
-            onChange={(e) => setCurrentColor(e.target.value)}
-            className="w-8 h-8 rounded-full border-none"
-          />
-          <label htmlFor="brush-size" className="text-gray-300">Brush Size:</label>
-          <input
-            id="brush-size"
-            type="range"
-            min="1"
-            max="20"
-            value={brushSize}
-            onChange={(e) => setBrushSize(parseInt(e.target.value, 10))}
-            className="w-24 accent-[#a050d9]"
-          />
-          <button
-            onClick={clearCanvas}
-            className="px-4 py-2 rounded-lg text-white bg-gray-600 hover:bg-gray-500 transition-colors"
-          >
-            Clear
-          </button>
-          <button
-            onClick={saveCanvas}
-            className="px-4 py-2 rounded-lg text-white bg-[#a050d9] hover:bg-[#8e45c4] transition-colors"
-          >
-            Save
-          </button>
+    <AppShell>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="border-b border-border bg-background/95 px-8 py-6 backdrop-blur">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Art Playground</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Sketch ideas, explore colors, and save your canvas when it feels right.
+              </p>
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search tools"
+                className="h-11 w-full rounded-xl border border-input bg-card pl-10 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-72"
+              />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+            </div>
+          </div>
         </div>
 
-        {/* Canvas */}
-        <canvas
-          ref={canvasRef}
-          width={800}
-          height={600}
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          className="border-2 border-[#3e3e3e] rounded-xl cursor-crosshair bg-white"
-        />
+        <div className="flex-1 overflow-y-auto px-8 py-8">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
+            <div className="mb-6 flex flex-wrap items-center gap-4">
+              <label htmlFor="color-picker" className="text-sm font-medium text-foreground">
+                Color
+              </label>
+              <input
+                id="color-picker"
+                type="color"
+                value={currentColor}
+                onChange={(event) => setCurrentColor(event.target.value)}
+                className="h-10 w-10 rounded-full border border-border bg-background"
+              />
+              <label htmlFor="brush-size" className="text-sm font-medium text-foreground">
+                Brush Size
+              </label>
+              <input
+                id="brush-size"
+                type="range"
+                min="1"
+                max="20"
+                value={brushSize}
+                onChange={(event) => setBrushSize(parseInt(event.target.value, 10))}
+                className="w-28 accent-primary"
+              />
+              <button
+                onClick={clearCanvas}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-muted px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted/80"
+              >
+                <Trash2 size={16} />
+                Clear
+              </button>
+              <button
+                onClick={saveCanvas}
+                className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                <Download size={16} />
+                Save
+              </button>
+              <div className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-background px-4 text-sm text-muted-foreground">
+                <Paintbrush size={16} />
+                Ready to draw
+              </div>
+            </div>
+
+            <canvas
+              ref={canvasRef}
+              width={800}
+              height={600}
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={stopDrawing}
+              onMouseLeave={stopDrawing}
+              className="w-full rounded-xl border border-border bg-white cursor-crosshair"
+            />
+          </div>
+        </div>
       </div>
-    </div>
+    </AppShell>
   );
 };
 

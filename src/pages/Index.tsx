@@ -1,21 +1,29 @@
-import Header from "@/components/landing/Header";
-import HeroSection from "@/components/landing/HeroSection";
-import FeatureGrid from "@/components/landing/FeatureGrid";
-import CTASection from "@/components/landing/CTASection";
-import Footer from "@/components/landing/Footer";
+import { useEffect } from "react";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const Index = () => {
-  return (
-    <div className="min-h-screen force-light-theme">
-      <Header />
-      <main>
-        <HeroSection />
-        <FeatureGrid />
-        <CTASection />
-      </main>
-      <Footer />
-    </div>
-  );
-};
+import LandingPage from "@/components/LandingPage";
+import { useAuth } from "@/hooks/useAuth";
 
-export default Index;
+export default function Index() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate("/homepage", { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (user) return null;
+
+  return <LandingPage />;
+}

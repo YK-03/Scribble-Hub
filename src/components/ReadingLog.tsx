@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   SquarePen,
   Trash2,
@@ -12,17 +12,12 @@ import {
   Link as LinkIcon,
   Bookmark,
   BookmarkPlus,
-  Moon,
-  Sun,
   Loader2,
 } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
+import AppShell from '@/components/AppShell';
 
 // Main App component for the Reading Log
 export default function App() {
-  const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
-  const isDarkMode = theme === 'dark';
   const { searchterm } = useParams();
 
   // Dummy reading items for initial load
@@ -79,8 +74,8 @@ export default function App() {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [showBookmarked, setShowBookmarked] = useState(false);
-
-  const toggleDarkMode = () => setTheme(isDarkMode ? 'light' : 'dark');
+  const handleSearchChange = (e) => setSearchQuery(e.target.value);
+  const handleAdd = () => handleAddReadingItem();
 
   useEffect(() => {
     if (searchterm) {
@@ -153,80 +148,69 @@ export default function App() {
   });
 
   return (
-    <div
-      className={`min-h-screen font-sans ${isDarkMode ? 'dark bg-neutral-900 text-neutral-100' : 'bg-neutral-50 text-neutral-900'}`}
-    >
-      <header className={`shadow-sm p-4 sticky top-0 z-10 ${isDarkMode ? 'bg-neutral-800' : 'bg-white'}`}>
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <button onClick={() => navigate('/homepage')} className="font-bold text-2xl text-purple-600 bg-transparent" aria-label="Go to homepage">
-              Scribble Hub
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'}`}
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+    <AppShell>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex items-center justify-between px-8 h-14 border-b border-border shrink-0">
+          <h1 className="text-xl font-medium tracking-tight">Reading List</h1>
+
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setShowBookmarked((v) => !v)}
-              className={`p-2 rounded-full transition-colors ${showBookmarked ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'}`}
+              className={`flex items-center justify-center px-3 h-8 border rounded-md transition-colors ${showBookmarked ? 'border-[#D85A30] bg-[#D85A30] text-white' : 'border-border bg-muted text-muted-foreground hover:bg-accent/30'}`}
               aria-label="Toggle bookmarked items"
             >
-              <Bookmark size={20} />
+              <Bookmark size={13} />
             </button>
-            <div className="relative">
+            <div className="flex items-center gap-2 px-3 h-8 border border-border rounded-md bg-muted w-52">
+              <Search size={13} className="text-muted-foreground shrink-0" />
               <input
                 type="text"
-                placeholder="Search books..."
+                placeholder="Search…"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`pl-10 pr-4 py-2 rounded-full ${isDarkMode ? 'bg-neutral-700 text-neutral-300' : 'bg-neutral-100 text-neutral-700'} focus:outline-none focus:ring-2 focus:ring-purple-300 transition-colors`}
+                onChange={handleSearchChange}
+                className="border-none bg-transparent h-full p-0 text-sm outline-none w-full text-foreground placeholder:text-muted-foreground"
               />
-              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-neutral-400' : 'text-neutral-400'}`} size={18} />
             </div>
+
             <button
-              onClick={handleAddReadingItem}
-              className="px-4 py-2 bg-purple-600 text-white rounded-full font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+              onClick={handleAdd}
+              className="flex items-center gap-2 px-4 py-1.5 bg-[#7F77DD] text-white text-sm font-medium rounded-md hover:bg-[#6e66cc] transition-colors"
             >
-              <Plus size={20} />
-              <span>New Reading Item</span>
+              <Plus size={14} />
+              New item
             </button>
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto p-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold" style={{ color: isDarkMode ? '#E0E0E0' : '#121212' }}>
-            Your Reading Log
-          </h1>
-          <p className="text-lg mt-2" style={{ color: isDarkMode ? '#B0B0B0' : '#888888' }}>
-            Track, organize, and summarize your reading journey.
-          </p>
+        <div className="flex-1 overflow-y-auto px-8 py-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredItems.length > 0 ? (
+              filteredItems.map((item) => (
+                <ReadingCard key={item.id} item={item} onEdit={handleEditReadingItem} onDelete={handleDeleteClick} toggleBookmark={toggleBookmark} />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
+                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-4" />
+                <h2 className="text-base font-medium text-foreground mb-1">
+                  Nothing here yet
+                </h2>
+                <p className="text-sm text-muted-foreground max-w-xs">
+                  {searchQuery
+                    ? `No results for "${searchQuery}"`
+                    : "Add your first entry to get started."}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredItems.length > 0 ? (
-            filteredItems.map((item) => (
-              <ReadingCard key={item.id} item={item} onEdit={handleEditReadingItem} onDelete={handleDeleteClick} toggleBookmark={toggleBookmark} />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-neutral-500 p-8 dark:text-neutral-400">
-              <p>No reading items found. Try adding a new one!</p>
-            </div>
-          )}
-        </div>
-      </main>
+      </div>
 
       {isModalOpen && <ReadingForm onSave={handleSaveReadingItem} onClose={() => setIsModalOpen(false)} initialData={currentReadingItem} onShowMessage={showMessageModal} />}
 
       {isConfirmModalOpen && <ConfirmationModal message="Are you sure you want to delete this reading item?" onConfirm={handleDeleteConfirm} onCancel={() => setIsConfirmModalOpen(false)} />}
 
       {isMessageModalOpen && <MessageModal message={message} onClose={() => setIsMessageModalOpen(false)} />}
-    </div>
+    </AppShell>
   );
 }
 
@@ -245,23 +229,23 @@ const ReadingCard = ({ item, onEdit, onDelete, toggleBookmark }) => {
     }
   };
   const getProgressColor = (progress) => {
-    if (progress === 100) return 'bg-green-500';
-    if (progress > 0) return 'bg-blue-500';
-    return 'bg-neutral-300 dark:bg-neutral-600';
+    if (progress === 100) return 'bg-[#1D9E75]';
+    if (progress > 0) return 'bg-[#7F77DD]';
+    return 'bg-muted';
   };
 
   const coverUrl = item.isbn ? `https://covers.openlibrary.org/b/isbn/${item.isbn}-M.jpg` : null;
 
   return (
-    <div className="group bg-white rounded-lg shadow-md p-6 border border-neutral-200 hover:shadow-lg transition-shadow duration-300 dark:bg-neutral-800 dark:border-neutral-700">
+    <div className="bg-card rounded-xl border border-border p-5 hover:bg-accent/30 hover:border-border/80 transition-all duration-150 group">
       <div className="flex justify-end items-start mb-2 space-x-2">
         <button onClick={() => toggleBookmark(item.id)} className="p-1 transition-colors rounded-full" aria-label="Toggle bookmark">
-          {item.isBookmarked ? <Bookmark size={20} className="text-purple-600 fill-current" /> : <BookmarkPlus size={20} className="text-neutral-400 group-hover:text-purple-600" />}
+          {item.isBookmarked ? <Bookmark size={20} className="fill-current text-[#D85A30]" /> : <BookmarkPlus size={20} className="text-muted-foreground group-hover:text-[#D85A30]" />}
         </button>
-        <button onClick={(e) => { e.stopPropagation(); onEdit(item); }} className="p-1 text-neutral-500 hover:text-purple-600 transition-colors rounded-full" aria-label="Edit item">
+        <button onClick={(e) => { e.stopPropagation(); onEdit(item); }} className="rounded-full p-1 text-muted-foreground transition-colors hover:text-purple-600" aria-label="Edit item">
           <SquarePen size={18} />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="p-1 text-neutral-500 hover:text-red-500 transition-colors rounded-full" aria-label="Delete item">
+        <button onClick={(e) => { e.stopPropagation(); onDelete(item.id); }} className="rounded-full p-1 text-muted-foreground transition-colors hover:text-red-500" aria-label="Delete item">
           <Trash2 size={18} />
         </button>
       </div>
@@ -271,7 +255,7 @@ const ReadingCard = ({ item, onEdit, onDelete, toggleBookmark }) => {
           <img
             src={coverUrl}
             alt={`Cover for ${item.title}`}
-            className="rounded-lg shadow-md flex-shrink-0"
+            className="rounded-lg flex-shrink-0"
             style={{ width: '100px', height: '150px', objectFit: 'cover' }}
             onError={(e) => {
               const img = e.currentTarget;
@@ -282,33 +266,33 @@ const ReadingCard = ({ item, onEdit, onDelete, toggleBookmark }) => {
           />
         )}
         {!coverUrl && (
-          <div className="rounded-lg shadow-md flex-shrink-0 bg-neutral-200 text-neutral-800 flex items-center justify-center p-2 text-center" style={{ width: '100px', height: '150px' }}>
+          <div className="flex flex-shrink-0 items-center justify-center rounded-lg bg-muted p-2 text-center text-foreground" style={{ width: '100px', height: '150px' }}>
             No Cover
           </div>
         )}
         <div className="flex flex-col space-y-1 w-full">
           <div className="flex items-center space-x-2">
             {getStatusIcon(item.status)}
-            <h3 className="font-bold text-lg text-neutral-800 break-words dark:text-neutral-200">{item.title}</h3>
+            <h3 className="break-words text-lg font-bold text-foreground">{item.title}</h3>
           </div>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">By: {item.author}</p>
-          <div className="w-full h-2 bg-neutral-200 rounded-full mt-2 overflow-hidden dark:bg-neutral-700">
+          <p className="text-sm text-muted-foreground">By: {item.author}</p>
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
             <div className={`h-full ${getProgressColor(item.progress)} transition-all duration-500`} style={{ width: `${item.progress}%` }}></div>
           </div>
-          <span className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{item.progress}% Complete</span>
+          <span className="mt-1 text-xs text-muted-foreground">{item.progress}% Complete</span>
         </div>
       </div>
 
-      <p className="text-sm text-neutral-600 line-clamp-3 mb-2 dark:text-neutral-400">{item.summary}</p>
+      <p className="mb-2 line-clamp-3 text-sm text-muted-foreground">{item.summary}</p>
       {item.link && (
-        <div className="text-xs text-neutral-500 flex items-center space-x-1 mb-4 dark:text-neutral-400">
+        <div className="mb-4 flex items-center space-x-1 text-xs text-muted-foreground">
           <LinkIcon size={12} />
           <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
             View Resource
           </a>
         </div>
       )}
-      <div className="flex justify-between items-center text-xs text-neutral-400 dark:text-neutral-500">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
         <span>{item.timestamp}</span>
       </div>
     </div>

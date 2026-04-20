@@ -6,15 +6,13 @@ import {
   Plus,
   X,
   Search,
-  Sun,
-  Moon,
   Users,
   Send,
   Loader2,
   Pin,
   Lightbulb,
 } from 'lucide-react';
-import { useTheme } from './ThemeProvider';
+import AppShell from './AppShell';
 
 const formatTimeAgo = (isoString) => {
   if (!isoString) return '';
@@ -34,9 +32,6 @@ const formatTimeAgo = (isoString) => {
 };
 
 export default function Projects() {
-  const { theme, setTheme } = useTheme();
-  const isDarkMode = theme === 'dark';
-  const toggleDarkMode = () => setTheme(isDarkMode ? 'light' : 'dark');
   const navigate = useNavigate();
   const { searchterm } = useParams();
 
@@ -164,74 +159,66 @@ export default function Projects() {
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
-      <header className="bg-white shadow-sm p-4 sticky top-0 z-10 dark:bg-card">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => navigate("/homepage")}
-              className="font-bold text-2xl text-purple-600 bg-transparent"
-              aria-label="Go to homepage"
-            >
-              Scribble Hub
-            </button>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-full transition-colors ${isDarkMode ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'}`}
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search notes..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="pl-10 pr-4 py-2 rounded-full bg-neutral-100 text-neutral-700 focus:outline-none focus:ring-2 focus:ring-purple-300 transition-colors dark:bg-[#232326] dark:text-[#E0E0E0] dark:border dark:border-[#444444]"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-[#B0B0B0]" size={18} />
+    <AppShell>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="border-b border-border bg-background/95 px-8 py-6 backdrop-blur">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Your Project Ideas</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Capture, organize, and manage your thoughts for new projects.
+              </p>
             </div>
-            <button
-              onClick={handleAddProject}
-              className="px-4 py-2 bg-purple-600 text-white rounded-full font-semibold shadow-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
-            >
-              <Plus size={20} />
-              <span>New Project</span>
-            </button>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search notes..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="h-11 w-full rounded-xl border border-input bg-card pl-10 pr-4 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring sm:w-72"
+                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+              </div>
+              <button
+                onClick={handleAddProject}
+                className="inline-flex h-11 items-center justify-center space-x-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
+              >
+                <Plus size={18} />
+                <span>New Project</span>
+              </button>
+            </div>
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto p-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-neutral-800 dark:text-card-foreground dark:drop-shadow-lg">Your Project Ideas</h1>
-          <p className="text-lg text-neutral-500 mt-2 dark:text-[#B0B0B0]">Capture, organize, and manage your thoughts for new projects.</p>
+        <div className="flex-1 overflow-y-auto px-8 py-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map(project => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onEdit={handleEditProject}
+                  onDelete={handleDeleteClick}
+                  onCollaborate={handleOpenCollaboratorModal}
+                  onTogglePin={handleTogglePin}
+                />
+              ))
+            ) : (
+              <div className="col-span-full flex flex-col items-center p-16 text-center text-muted-foreground">
+                <Lightbulb className="mb-4 h-16 w-16 text-muted-foreground" />
+                <h2 className="mb-2 text-2xl font-semibold text-foreground">
+                  {searchQuery ? `No projects found for "${searchQuery}"` : "Your canvas is empty"}
+                </h2>
+                <p className="max-w-md text-lg text-muted-foreground">
+                  {searchQuery ? "Try a different search term or clear the search." : "Start by adding a new project to capture your brilliant ideas!"}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProjects.length > 0 ? (
-            filteredProjects.map(project => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onEdit={handleEditProject}
-                onDelete={handleDeleteClick}
-                onCollaborate={handleOpenCollaboratorModal}
-                onTogglePin={handleTogglePin}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center text-neutral-500 p-16 flex flex-col items-center">
-              <Lightbulb className="w-16 h-16 mb-4 text-neutral-400" />
-              <h2 className="text-2xl font-semibold mb-2 text-neutral-800 dark:text-[#E0E0E0]">{searchQuery ? `No projects found for "${searchQuery}"` : "Your canvas is empty"}</h2>
-              <p className="text-lg text-neutral-500 dark:text-[#B0B0B0] max-w-md">{searchQuery ? "Try a different search term or clear the search." : "Start by adding a new project to capture your brilliant ideas!"}</p>
-            </div>
-          )}
-        </div>
-      </main>
+      </div>
+      
 
       {isModalOpen && (
         <ProjectForm
@@ -264,21 +251,21 @@ export default function Projects() {
           onClose={() => setIsCollaboratorModalOpen(false)}
         />
       )}
-    </div>
+    </AppShell>
   );
 }
 
 const ProjectCard = ({ project, onEdit, onDelete, onCollaborate, onTogglePin }) => (
-  <div className="group bg-white rounded-lg shadow-md p-6 border border-neutral-200 hover:shadow-lg transition-shadow duration-300 dark:bg-card dark:border-border cursor-pointer">
+  <div className="group cursor-pointer rounded-lg border border-border bg-card p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
     <div className="flex justify-between items-start mb-4">
-      <h3 className="font-bold text-lg text-neutral-800 break-words dark:text-[#E0E0E0]">{project.title}</h3>
+      <h3 className="break-words text-lg font-bold text-foreground">{project.title}</h3>
       <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           onClick={(e) => {
             e.stopPropagation();
             onTogglePin(project.id);
           }}
-          className={`p-1 rounded-full transition-colors ${project.isPinned ? 'text-purple-600' : 'text-neutral-500 hover:text-purple-600'}`}
+          className={`rounded-full p-1 transition-colors ${project.isPinned ? 'text-purple-600' : 'text-muted-foreground hover:text-purple-600'}`}
           aria-label={project.isPinned ? "Unpin project" : "Pin project"}
         >
           <Pin size={18} className={project.isPinned ? 'fill-current' : ''} />
@@ -288,7 +275,7 @@ const ProjectCard = ({ project, onEdit, onDelete, onCollaborate, onTogglePin }) 
             e.stopPropagation();
             onEdit(project);
           }}
-          className="p-1 text-neutral-500 hover:text-purple-600 transition-colors rounded-full"
+          className="rounded-full p-1 text-muted-foreground transition-colors hover:text-purple-600"
           aria-label="Edit project"
         >
           <SquarePen size={18} />
@@ -298,7 +285,7 @@ const ProjectCard = ({ project, onEdit, onDelete, onCollaborate, onTogglePin }) 
             e.stopPropagation();
             onDelete(project.id);
           }}
-          className="p-1 text-neutral-500 hover:text-red-500 transition-colors rounded-full"
+          className="rounded-full p-1 text-muted-foreground transition-colors hover:text-red-500"
           aria-label="Delete project"
         >
           <Trash2 size={18} />
@@ -308,15 +295,15 @@ const ProjectCard = ({ project, onEdit, onDelete, onCollaborate, onTogglePin }) 
             e.stopPropagation();
             onCollaborate(project);
           }}
-          className="p-1 text-neutral-500 hover:text-purple-600 transition-colors rounded-full"
+          className="rounded-full p-1 text-muted-foreground transition-colors hover:text-purple-600"
           aria-label="Add collaborators"
         >
           <Users size={18} />
         </button>
       </div>
     </div>
-    <p className="text-sm text-neutral-600 mb-4 line-clamp-3 dark:text-muted-foreground">{project.description}</p>
-    <div className="flex justify-between items-center text-xs text-neutral-400 dark:text-[#B0B0B0]">
+    <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">{project.description}</p>
+    <div className="flex items-center justify-between text-xs text-muted-foreground">
       <span>{formatTimeAgo(project.timestamp)}</span>
     </div>
   </div>

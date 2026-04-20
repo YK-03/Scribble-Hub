@@ -1,88 +1,81 @@
-import { PenTool, Twitter, Github, Mail, Heart, Linkedin, ArrowUp } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowUp, Github, Linkedin, Mail, PenTool, Twitter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   const socialLinks = [
-    { href: "https://x.com/awkdev005", icon: Twitter, label: "Twitter" },
+    { href: "https://x.com/kaushiktwtss", icon: Twitter, label: "Twitter" },
     { href: "https://github.com/YK-03", icon: Github, label: "GitHub" },
     { href: "mailto:yash005kaushik@gmail.com", icon: Mail, label: "Email" },
     { href: "https://www.linkedin.com/in/yash005kaushik", icon: Linkedin, label: "LinkedIn" },
   ];
 
   const handleBackToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  
+
   return (
-    <footer id="contact" className="relative bg-card border-t border-border scroll-mt-16">
-      <div className="container mx-auto px-6">
-        {/* Main Footer */}
-        <div className="py-16">
-          <div className="flex justify-start text-left">
-            {/* Brand Column */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
-                  <PenTool className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-[#ff7ee5] to-[#a855f7] bg-clip-text text-transparent">
+    <footer
+      id="contact"
+      className="scroll-mt-20 border-t border-border/70 bg-background/80 dark:border-gray-800 dark:bg-gray-900/50"
+    >
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-md">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border bg-card shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <PenTool className="h-5 w-5 text-foreground dark:text-gray-200" />
+              </div>
+              <div>
+                <p className="text-base font-semibold tracking-tight text-foreground dark:text-gray-200">
                   Scribble Hub
-                </span>
-              </div>
-              
-              <p className="text-muted-foreground leading-relaxed max-w-md">
-                Transform your thoughts into beautifully organized notes. 
-                The all-in-one digital workspace for creative minds and organized thinkers.
-              </p>
-
-              {/* Social Links */}
-              <div className="flex items-center justify-start gap-4">
-                {socialLinks.map((link) => {
-                  const Icon = link.icon;
-                  return (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target={link.href.startsWith("http") ? "_blank" : undefined}
-                      rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                      aria-label={link.label}
-                      className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
-                    >
-                      <Icon className="w-5 h-5" />
-                    </a>
-                  );
-                })}
+                </p>
+                <p className="text-sm text-muted-foreground dark:text-gray-400">
+                  A calmer way to organize ideas.
+                </p>
               </div>
             </div>
-            </div>
-        </div>
 
-        {/* Bottom Bar */}
-        <div className="py-6 border-t border-border">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Scribble Hub. All rights reserved.
+            <p className="mt-5 text-sm leading-7 text-muted-foreground dark:text-gray-400">
+              Designed for people who want their notes to feel structured, useful, and easy to
+              return to, whether they are planning projects or collecting everyday thoughts.
             </p>
-            
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              Made with 
-              <Heart className="w-4 h-4 text-red-500 fill-current" />
-              for creative minds
+          </div>
+
+          <div className="flex flex-col gap-6 sm:items-end">
+            <div className="flex items-center gap-3">
+              {socialLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target={link.href.startsWith("http") ? "_blank" : undefined}
+                    rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    aria-label={link.label}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all duration-200 hover:-translate-y-0.5 hover:scale-105 hover:border-primary/30 hover:text-foreground hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:text-gray-200 dark:hover:shadow-[0_12px_30px_rgba(0,0,0,0.28)]"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                );
+              })}
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-fit rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              onClick={handleBackToTop}
+              aria-label="Back to top"
+            >
+              <ArrowUp className="mr-2 h-4 w-4" />
+              Back to top
+            </Button>
           </div>
         </div>
 
-        {/* Back to top button */}
-        <div className="absolute -top-6 right-10">
-          <Button
-            size="icon"
-            className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
-            onClick={handleBackToTop}
-            aria-label="Back to top"
-          >
-            <ArrowUp className="w-5 h-5" />
-          </Button>
+        <div className="mt-12 flex flex-col gap-3 border-t border-border/70 pt-6 text-sm text-muted-foreground dark:border-gray-700 dark:text-gray-400 sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} Scribble Hub. All rights reserved.</p>
+          <p>Built for thoughtful work.</p>
         </div>
       </div>
     </footer>
