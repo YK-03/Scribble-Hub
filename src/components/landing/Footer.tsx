@@ -1,9 +1,8 @@
-import { ArrowUp, Github, Linkedin, Mail, PenTool, Twitter } from "lucide-react";
+import { ArrowUp, Github, Linkedin, Mail, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   const socialLinks = [
-    { href: "https://x.com/kaushiktwtss", icon: Twitter, label: "Twitter" },
     { href: "https://github.com/YK-03", icon: Github, label: "GitHub" },
     { href: "mailto:yash005kaushik@gmail.com", icon: Mail, label: "Email" },
     { href: "https://www.linkedin.com/in/yash005kaushik", icon: Linkedin, label: "LinkedIn" },
